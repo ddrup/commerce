@@ -19,6 +19,8 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/say_hello.cpp
     src/hello_handler.cpp
     src/hello_handler.hpp
+    src/cart_service/cart_handler.cpp
+    src/cart_service/cart_handler.hpp
 )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::core)
 
