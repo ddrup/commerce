@@ -28,7 +28,7 @@ components_manager:
 
         handler-catalog:
             path: /v1/product
-            method: GET, POST, DELETE
+            method: GET,POST,DELETE
             task_processor: main-task-processor
 
         postgres-db-1:

@@ -4,7 +4,7 @@ project(commerce CXX)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(DownloadUserver)
 
-find_package(userver COMPONENTS core QUIET)
+find_package(userver COMPONENTS core postgresql QUIET)
 if(NOT userver_FOUND)
   # Tries TRY_DIR first, falls back to downloading userver from GitHub using CPM.
   download_userver(TRY_DIR third_party/userver)
@@ -21,7 +21,7 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/catalog_service/catalog_handler.hpp
     src/catalog_service/sql_queries.hpp
 )
-target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::core)
+
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::postgresql)
 
 # The Service

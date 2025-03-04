@@ -2,13 +2,17 @@
 #include <userver/utest/using_namespace_userver.hpp>
 #include <userver/utils/daemon_run.hpp>
 
-// Note: this is for the purposes of tests/samples only
-#include <userver/utest/using_namespace_userver.hpp>
+#include <userver/clients/dns/component.hpp>
+
 #include "cart_service/cart_handler.hpp"
+#include "catalog_service/catalog_handler.hpp"
  
 int main(int argc, char* argv[]) {
     auto component_list = components::MinimalServerComponentList()
-                                        .Append<cart::CartHandler>();
-
+                                        .Append<cart::CartHandler>()
+                                        .Append<catalog::CatalogHandler>()
+                                        .Append<components::Postgres>("postgres-db-1")
+                                        .Append<userver::clients::dns::Component>();
+                                        
     return utils::DaemonMain(argc, argv, component_list);
 }
