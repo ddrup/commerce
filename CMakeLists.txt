@@ -15,15 +15,14 @@ userver_setup_environment()
 
 # Common sources
 add_library(${PROJECT_NAME}_objs OBJECT
-    src/say_hello.hpp
-    src/say_hello.cpp
-    src/hello_handler.cpp
-    src/hello_handler.hpp
     src/cart_service/cart_handler.cpp
     src/cart_service/cart_handler.hpp
+    src/catalog_service/catalog_handler.cpp
+    src/catalog_service/catalog_handler.hpp
+    src/catalog_service/sql_queries.hpp
 )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::core)
-
+target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::postgresql)
 
 # The Service
 add_executable(${PROJECT_NAME} src/main.cpp)

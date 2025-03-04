@@ -4,13 +4,10 @@
 
 // Note: this is for the purposes of tests/samples only
 #include <userver/utest/using_namespace_userver.hpp>
- 
-#include "hello_handler.hpp"
 #include "cart_service/cart_handler.hpp"
  
 int main(int argc, char* argv[]) {
     auto component_list = components::MinimalServerComponentList()
-                                        .Append<samples::hello::HelloHandler>()
                                         .Append<cart::CartHandler>();
 
     return utils::DaemonMain(argc, argv, component_list);
