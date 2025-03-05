@@ -70,7 +70,7 @@ int CatalogHandler::PostValue(
       "sample_transaction_insert_key_value",
       userver::storages::postgres::ClusterHostType::kMaster, {});
 
-  auto res = transaction.Execute(sql::kInsertValue, key, name, amount);
+  auto res = transaction.Execute(sql::kInsertValue, name, amount);
   if (res.RowsAffected()) {
     transaction.Commit();
     request.SetResponseStatus(userver::server::http::HttpStatus::kCreated);

@@ -8,7 +8,7 @@ namespace sql {
 const userver::storages::postgres::Query kCreateTable{
     "CREATE TABLE IF NOT EXISTS products("
         "product_id SERIAL PRIMARY KEY,"
-        "name TEXT,"
+        "name TEXT UNIQUE,"
         "amount INTEGER"
     ");",
     userver::storages::postgres::Query::Name{"sample_create_table"},
@@ -20,9 +20,9 @@ const userver::storages::postgres::Query kSelectValue{
 };
 
 const userver::storages::postgres::Query kInsertValue{
-    "INSERT INTO products(product_id, name, amount)"
-    "VALUES($1, $2, $3)"
-    "ON CONFLICT DO NOTHING",
+    "INSERT INTO products(name, amount)"
+    "VALUES($1, $2)"
+    "ON CONFLICT (name) DO NOTHING",
     userver::storages::postgres::Query::Name{"sample_insert_value"},
 };
 

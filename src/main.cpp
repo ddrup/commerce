@@ -3,6 +3,9 @@
 #include <userver/utils/daemon_run.hpp>
 
 #include <userver/clients/dns/component.hpp>
+#include <userver/testsuite/testsuite_support.hpp>
+#include <userver/server/handlers/tests_control.hpp>
+#include <userver/server/handlers/ping.hpp>
 
 #include "cart_service/cart_handler.hpp"
 #include "catalog_service/catalog_handler.hpp"
@@ -12,7 +15,10 @@ int main(int argc, char* argv[]) {
                                         .Append<cart::CartHandler>()
                                         .Append<catalog::CatalogHandler>()
                                         .Append<components::Postgres>("postgres-db-1")
-                                        .Append<userver::clients::dns::Component>();
+                                        .Append<components::TestsuiteSupport>()
+                                        .Append<userver::clients::dns::Component>()
+                                        .Append<userver::server::handlers::Ping>()
+                                        .Append<userver::server::handlers::TestsControl>();
                                         
     return utils::DaemonMain(argc, argv, component_list);
 }
