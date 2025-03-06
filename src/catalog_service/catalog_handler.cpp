@@ -17,22 +17,24 @@ CatalogHandler::CatalogHandler(
 std::string CatalogHandler::HandleRequest(
     userver::server::http::HttpRequest& request,
     userver::server::request::RequestContext& /* request_context */) const {
-  const auto& product_id = request.GetArg("product_id");
-  if (product_id.empty()) {
+  auto product_id_arg = request.GetArg("product_id");
+  if (product_id_arg.empty()) {
     throw userver::server::handlers::ClientError(
         userver::server::handlers::ExternalBody{
             "No 'product_id' query argument"});
   }
 
+  auto product_id = std::stoi(product_id_arg);
+
   request.GetHttpResponse().SetContentType(
       userver::http::content_type::kTextPlain);
   switch (request.GetMethod()) {
     case userver::server::http::HttpMethod::kGet:
-      return std::to_string(GetValue(product_id, request));
+      return std::to_string(GetAmount(product_id, request));
     case userver::server::http::HttpMethod::kPost:
-      return std::to_string(PostValue(product_id, request));
+      return std::to_string(PostProduct(request));
     case userver::server::http::HttpMethod::kDelete:
-      return std::to_string(DeleteValue(product_id));
+      return std::to_string(DeleteProduct(product_id));
     default:
       throw userver::server::handlers::ClientError(
           userver::server::handlers::ExternalBody{
@@ -40,8 +42,8 @@ std::string CatalogHandler::HandleRequest(
   }
 }
 
-int CatalogHandler::GetValue(
-    std::string_view key,
+int CatalogHandler::GetAmount(
+    std::int32_t key,
     const userver::server::http::HttpRequest& request) const {
   userver::storages::postgres::ResultSet res =
       pg_cluster_->Execute(userver::storages::postgres::ClusterHostType::kSlave,
@@ -52,15 +54,16 @@ int CatalogHandler::GetValue(
     return {};
   }
 
-  return res.AsSingleRow<int>();
+  return res.AsSingleRow<std::int32_t>();
 }
 
-int CatalogHandler::PostValue(
-    std::string_view key,
+int CatalogHandler::PostProduct(
     const userver::server::http::HttpRequest& request) const {
   std::string_view name = request.GetArg("name");
-  std::string_view amount_arg = request.GetArg("amount");
-  std::string_view amount = amount_arg.empty() ? "0" : amount_arg;
+  auto amount = request.GetArg("amount");
+
+  if(amount.empty()) amount = "0";
+
   if (name.empty()) {
     request.SetResponseStatus(userver::server::http::HttpStatus::kBadRequest);
     return {};
@@ -70,25 +73,20 @@ int CatalogHandler::PostValue(
       "sample_transaction_insert_key_value",
       userver::storages::postgres::ClusterHostType::kMaster, {});
 
-  auto res = transaction.Execute(sql::kInsertValue, name, amount);
+  auto res = transaction.Execute(sql::kInsertValue, name, std::stoi(amount));
   if (res.RowsAffected()) {
     transaction.Commit();
     request.SetResponseStatus(userver::server::http::HttpStatus::kCreated);
-    return res.AsSingleRow<int>();
+    return std::stoi(amount);
   }
 
-  res = transaction.Execute(sql::kSelectValue, key);
+  res = transaction.Execute("SELECT amount FROM products WHERE name=$1", name);
   transaction.Rollback();
 
-  auto result = res.AsSingleRow<int>();
-  if (std::to_string(result) != amount) {
-    request.SetResponseStatus(userver::server::http::HttpStatus::kConflict);
-  }
-
-  return result;
+  return res.AsSingleRow<int>();
 }
 
-int CatalogHandler::DeleteValue(std::string_view key) const {
+int CatalogHandler::DeleteProduct(std::int32_t key) const {
   auto res = pg_cluster_->Execute(
       userver::storages::postgres::ClusterHostType::kMaster, sql::kDeleteTable,
       key);

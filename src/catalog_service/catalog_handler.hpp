@@ -18,9 +18,9 @@ public:
     std::string HandleRequest(userver::server::http::HttpRequest& request, userver::server::request::RequestContext&) const override;
 
 private:
-    int GetValue(std::string_view key, const userver::server::http::HttpRequest& request) const;
-    int PostValue(std::string_view key, const userver::server::http::HttpRequest& request) const;
-    int DeleteValue(std::string_view key) const;
+    int GetAmount(std::int32_t key, const userver::server::http::HttpRequest& request) const;
+    int PostProduct(const userver::server::http::HttpRequest& request) const;
+    int DeleteProduct(std::int32_t key) const;
 
     userver::storages::postgres::ClusterPtr pg_cluster_;
 };
