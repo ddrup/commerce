@@ -6,6 +6,7 @@
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/server/handlers/tests_control.hpp>
 #include <userver/server/handlers/ping.hpp>
+#include <userver/clients/http/component.hpp>
 
 #include "cart_service/cart_handler.hpp"
 #include "catalog_service/catalog_handler.hpp"
@@ -18,6 +19,7 @@ int main(int argc, char* argv[]) {
                                         .Append<components::TestsuiteSupport>()
                                         .Append<userver::clients::dns::Component>()
                                         .Append<userver::server::handlers::Ping>()
+                                        .Append<components::HttpClient>()
                                         .Append<userver::server::handlers::TestsControl>();
                                         
     return utils::DaemonMain(argc, argv, component_list);

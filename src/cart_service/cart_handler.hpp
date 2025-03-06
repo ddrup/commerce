@@ -1,19 +1,25 @@
 #pragma once
 
+#include <userver/clients/http/client.hpp>
+#include <userver/clients/http/component.hpp>
 #include <userver/components/component_list.hpp>
 #include <userver/server/handlers/http_handler_base.hpp>
 
 namespace cart {
 
 class CartHandler final : public userver::server::handlers::HttpHandlerBase {
-public:
+ public:
+  static constexpr std::string_view kName = "handler-cart";
 
-    static constexpr std::string_view kName = "handler-cart";
+  CartHandler(const userver::components::ComponentConfig& config,
+              const userver::components::ComponentContext& context);
 
-    using HttpHandlerBase::HttpHandlerBase;
+  std::string HandleRequest(
+      userver::server::http::HttpRequest& request,
+      userver::server::request::RequestContext&) const override;
 
-    std::string HandleRequest(userver::server::http::HttpRequest& request, userver::server::request::RequestContext&) const override;
-
+ private:
+  userver::clients::http::Client& http_client_;
 };
 
 }  // namespace cart

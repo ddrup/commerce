@@ -57,6 +57,10 @@ components_manager:
 
         testsuite-support: {}
 
+        http-client:
+            load-enabled: true
+            fs-task-processor: fs-task-processor
+
         dynamic-config:                      # Dynamic config storage options
             defaults:
                 POSTGRES_CONNECTION_POOL_SETTINGS:
